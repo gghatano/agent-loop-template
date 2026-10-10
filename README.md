@@ -32,7 +32,7 @@ docs/ は空のままでいい。AI が実際に失敗した箇所だけが、�
 | `docs/failures.md` | AI→人間 | 失敗の4分類ログ。昇格判断の材料 |
 | `docs/decisions.md` | 両方 | 後から理由が分からなくなる判断だけを残す |
 | `.claude/hooks/stop-gate.sh` | — | 変更があるのに check が赤いまま止まろうとしたら差し戻す |
-| `scripts/loop.sh` | — | ヘッドレスで回す Ralph Loop（上限回数つき） |
+| `scripts/loop.sh` | — | ヘッドレスで回す Ralph Loop。check 緑・`.agent/BLOCKED`・無変化・上限回数で止まる |
 
 ## スキル
 
@@ -51,3 +51,11 @@ docs/ は空のままでいい。AI が実際に失敗した箇所だけが、�
 | Model | 上3つを満たしても解けない | タスクを割る。人間が持つ。半年後に再挑戦 |
 
 プロンプト改善が効くのは Context だけ。残り3つにプロンプトで対処しない。
+
+## ヘッドレス実行の注意
+
+[利用例](https://github.com/gghatano/agent-loop-example/blob/main/docs/walkthrough.md)で実際に踏んだもの。
+
+- 未信頼のワークスペースでは、`claude -p` は `.claude/settings.json` の allow を無視する。一方で Stop hook は動く。`loop.sh` は許可を `--allowedTools` で明示している
+- 許可はコマンドの前方一致で判定される。AI は `git -C . add` のような書き方もするので、コマンド単位で列挙すると正しい作業まで止まる。道具単位で許可し、破壊的な操作だけを `--disallowedTools` で塞ぐ
+- Issue の本文は `loop.sh` が人間側の `gh` で取得し、`tasks/issue-N.md` で渡す。AI に GitHub の認証を持たせない
