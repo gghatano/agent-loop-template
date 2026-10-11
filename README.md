@@ -65,6 +65,7 @@ docs/ の中身は空のままでいい。AI が実際に失敗した箇所だ�
 
 - 未信頼のワークスペースでは、`claude -p` は `.claude/settings.json` の allow を無視する。一方で Stop hook は動く。`loop.sh` は許可を `--allowedTools` で明示している
 - 許可はコマンドの前方一致で判定される。AI は `git -C . add` のような書き方もするので、コマンド単位で列挙すると正しい作業まで止まる。道具単位で許可し、破壊的な操作だけを `--disallowedTools` で塞ぐ
+- 前方一致は、コマンドの語の単位で効く。`Bash(python3 scripts/:*)` は `python3 scripts/phase.py` にも一致しない。`Bash(python3:*)` のように、先頭のコマンド名で書く
 - Issue の本文は `loop.sh` が人間側の `gh` で取得し、`tasks/issue-N.md` で渡す。AI に GitHub の認証を持たせない
 
 ## 評価関数を疑う

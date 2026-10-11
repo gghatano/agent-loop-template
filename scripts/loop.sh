@@ -3,6 +3,7 @@
 # check が通るか、AI がエスカレーションするか、上限回数に達するまで claude を繰り返し起動する。
 #
 #   ./scripts/loop.sh 42        # Issue #42 を目標に回す
+#   ./scripts/loop.sh dev       # 開発の手順（scripts/phase.py の 1〜8）を、人間の判断が要るところまで進める
 #   MAX_ITER=5 ./scripts/loop.sh
 #
 # 止まり方は3つ。どれも観察材料なので、止まったら /postmortem で分類する。
@@ -23,7 +24,7 @@ rm -f .agent/BLOCKED
 # 細かく列挙すると正しい作業が承認待ちで止まる。
 # 道具単位で広く許し、取り返しのつかない操作だけを DENIED で塞ぐ。
 ALLOWED=(
-  "Bash(./scripts/check.sh:*)" "Bash(git:*)"
+  "Bash(./scripts/check.sh:*)" "Bash(python3:*)" "Bash(git:*)"
   # TODO: プロジェクトで使う道具に絞る
   "Bash(uv:*)" "Bash(npm:*)" "Bash(pnpm:*)"
   "Bash(cat:*)" "Bash(head:*)" "Bash(tail:*)" "Bash(ls:*)" "Bash(grep:*)" "Bash(find:*)" "Bash(wc:*)"
@@ -34,7 +35,9 @@ DENIED=(
 )
 
 # Issue 本文は人間側で取ってきて渡す。AI に gh の認証を持たせない。
-if [ -n "$ISSUE" ]; then
+if [ "$ISSUE" = "dev" ]; then
+  GOAL="/dev"
+elif [ -n "$ISSUE" ]; then
   issue_file="tasks/issue-$ISSUE.md"
   if [ ! -f "$issue_file" ]; then
     gh issue view "$ISSUE" > "$issue_file" 2>/dev/null || {
@@ -62,7 +65,13 @@ for i in $(seq 1 "$MAX_ITER"); do
     --permission-mode acceptEdits --allowedTools "${ALLOWED[@]}" --disallowedTools "${DENIED[@]}" \
     > ".agent/logs/$ts.md" 2>&1
 
-  if ./scripts/check.sh > ".agent/logs/$ts.check" 2>&1; then
+  if [ "$ISSUE" = "dev" ]; then
+    python3 scripts/phase.py > ".agent/logs/$ts.check" 2>&1
+    if python3 scripts/phase.py --done >/dev/null 2>&1; then
+      echo "all phases done at iteration $i"; exit 0
+    fi
+    grep "今ここ" ".agent/logs/$ts.check" || true
+  elif ./scripts/check.sh > ".agent/logs/$ts.check" 2>&1; then
     echo "check passed at iteration $i"
     tail -n 1 ".agent/logs/$ts.check"
     exit 0

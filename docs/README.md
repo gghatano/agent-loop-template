@@ -12,9 +12,9 @@ knowledge/ … 開発のやり方の知識。上の流れとは別に、失敗�
 
 | フォルダ | 読み手 | 書き手 | 正か | 中身 |
 |---|---|---|---|---|
-| [`design/`](design/) | 人間 | 人間（AI は頼まれたときだけ） | **正** | 何を作るか・なぜそうするか。文章と図でよい |
+| [`design/`](design/) | 人間 | 人間、または AI が結論から清書 | **正** | 何を作るか・なぜそうするか。文章と図でよい |
 | [`discussions/`](discussions/) | 人間・AI | 誰でも | 正ではない | 実装のアイディア、比較、未決の問い。状態を持つ |
-| [`decisions.md`](decisions.md) | 人間・AI | 人間 | 正 | 議論から採用した判断。design に反映する前の橋 |
+| [`decisions.md`](decisions.md) | 人間・AI | 人間、または AI が結論から清書 | 正 | 議論から採用した判断。design に反映する前の橋 |
 | [`spec/`](spec/) | AI | AI（`/sync-spec`） | design から導く | 実装と評価に要る規則だけを、表と例で。出典つき |
 | [`knowledge/`](knowledge/) | AI・人間 | AI→人間が確認 | — | 開発のやり方、踏んだ罠、失敗ログ |
 
@@ -23,6 +23,7 @@ knowledge/ … 開発のやり方の知識。上の流れとは別に、失敗�
 - **spec を直したくなったら、design を直す。** spec は design と mock から導くもので、手で直した spec は次の `/sync-spec` で消える
 - **議論の結論は、議論の資料に書いて終わりにしない。** 採用したら `decisions.md` に1項目足し、design に反映し、議論の status を `adopted` にする
 - **未決（status: open）の議論を前提に実装しない。** AI は open の議論に当たったら止めて聞く
+- **判断は人間、清書は AI。** 人間は議論の `## 結論` に判断を書く（箇条書き・一言でよい）。AI はそれを `decisions.md`・`design/`・設定に清書し、status を `adopted` にする。清書の PR には、どの議論の結論を反映したかを書く。結論が空の議論を AI が清書してはいけない
 - **knowledge は失敗からしか増やさない。** 根拠は `knowledge/failures.md` の行
 
 ## 整合の検査（`scripts/docs_check.py`）

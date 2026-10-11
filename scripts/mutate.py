@@ -13,6 +13,7 @@
 生き残りが1つでもあれば exit 1。
 """
 
+import hashlib
 import json
 import os
 import subprocess
@@ -26,6 +27,12 @@ LOGS = ROOT / ".agent" / "mutate-logs"
 
 def sh(cmd: list[str], cwd: Path, **kw) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False, **kw)
+
+
+def eval_tree() -> str:
+    """評価関数（tests/ と scripts/check.sh）の、HEAD での中身を表すハッシュ。"""
+    r = sh(["git", "ls-tree", "-r", "HEAD", "--", "tests", "scripts/check.sh"], ROOT)
+    return hashlib.sha256(r.stdout.encode()).hexdigest()[:12]
 
 
 def main() -> int:
@@ -77,7 +84,9 @@ def main() -> int:
         sh(["git", "worktree", "remove", "--force", str(WT)], ROOT)
 
     out = ROOT / ".agent" / "mutate-result.json"
-    out.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+    summary = {"eval_tree": eval_tree(), "killed": sum(r["status"] == "KILLED" for r in results),
+               "survived": sum(r["status"] == "SURVIVED" for r in results), "mutants": results}
+    out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     killed = sum(r["status"] == "KILLED" for r in results)
     survived = [r for r in results if r["status"] == "SURVIVED"]
     print(f"\n{killed}/{len(results)} killed, {len(survived)} survived -> {out.relative_to(ROOT)}")

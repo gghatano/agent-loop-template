@@ -15,4 +15,4 @@ decision:
 まだ分かっていないこと。誰に聞けば分かるか。
 
 ## 結論
-（adopted / rejected にしたら書く）
+<!-- 人間が判断を書く。一言・箇条書きでよい。書いたら AI が decisions.md と design に清書する -->

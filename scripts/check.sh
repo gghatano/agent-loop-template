@@ -25,6 +25,12 @@ if [ ${#STEPS[@]} -eq 0 ]; then
   fi
 fi
 
+# --list: 実行せずに、プロジェクトのステップを並べるだけ（scripts/phase.py が使う）
+if [ "${1:-}" = "--list" ]; then
+  for entry in "${STEPS[@]}"; do echo "$entry"; done
+  exit 0
+fi
+
 if [ ${#STEPS[@]} -eq 0 ]; then
   echo "CHECK: FAIL no steps configured (edit STEPS in scripts/check.sh)"
   exit 1
