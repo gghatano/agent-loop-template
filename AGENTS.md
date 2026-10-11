@@ -29,7 +29,8 @@
 ## Where things are
 - 評価: `scripts/check.sh`（AI・hook・CI 共通。docs の整合も毎回検査する）
 - 仕様（AI 向け）: `docs/spec/`。実装はまずここを読む。理由が知りたいときは出典の `docs/design/` を読む
-- 未決の議論: `docs/discussions/`。status が open のものを前提に実装しない
+- 未決の議論: `docs/discussions/`。status が open のものを前提に実装しない。人間が `## 結論` を書いたら清書する（`docs/README.md`）
+- 開発の手順と現在地: `python3 scripts/phase.py`。進めるときは `/dev`
 - 判断の記録: `docs/decisions.md`
 - 開発の知識と失敗ログ: `docs/knowledge/`
 - 作業メモ: `tasks/current.md`（使い捨て。正は Issue）

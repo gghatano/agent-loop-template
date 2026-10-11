@@ -13,7 +13,16 @@ if [ -z "$(git status --porcelain -- . ':!.agent' ':!tasks' 2>/dev/null)" ]; the
   rm -f "$state"; exit 0
 fi
 
-if out=$(./scripts/check.sh 2>&1); then
+# 開発の手順で実装（段階7）より前なら、check が赤いのは正しい状態（テストも実装もまだない）。
+# その間は docs の整合だけを求める。
+if [ -f scripts/phase.py ]; then
+  n=$(python3 scripts/phase.py --json 2>/dev/null | python3 -c 'import json,sys; c=json.load(sys.stdin)["current"]; print(c["n"] if c else 99)' 2>/dev/null || echo 99)
+  if [ "$n" -lt 7 ]; then
+    if out=$(python3 scripts/docs_check.py 2>&1); then rm -f "$state"; exit 0; fi
+  fi
+fi
+
+if [ -z "${out:-}" ] && out=$(./scripts/check.sh 2>&1); then
   rm -f "$state"; exit 0
 fi
 

@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """誤実装（ミュータント）を1つずつ当てて scripts/check.sh を回し、評価関数がそれを落とせるかを測る。
 
-  python3 scripts/mutate.py .agent/mutants.json
+  python3 scripts/mutate.py tests/mutants.json
 
 ミュータントの書式（JSON の配列）。edits は「ファイル, 置換前, 置換後」の組で、置換前はファイル中に1回だけ現れること。
   [{"id": "M01_desc_hardcoded", "why": "説明文をモックの文言で直書き",
     "edits": [["app/templates/detail.html", "{{ project.description }}", "受発注…"]]}]
+ミュータントの一覧はコミットする（どの誤実装を試したかをレビューできるように）。
+どんなテストでも区別できない誤実装（等価変異）は、人間が議論で認めたあとに "equivalent": "理由" を書く。
+生き残っても EQUIVALENT として別に数え、失敗にしない。
 
 作業ツリーには触らない。HEAD を別の git worktree（.agent/mutwt）に展開し、そこで当てては元の内容を書き戻す。
 依存の準備が要るなら MUTATE_SETUP に書く（例: MUTATE_SETUP="uv sync -q"）。
@@ -13,6 +16,7 @@
 生き残りが1つでもあれば exit 1。
 """
 
+import hashlib
 import json
 import os
 import subprocess
@@ -26,6 +30,12 @@ LOGS = ROOT / ".agent" / "mutate-logs"
 
 def sh(cmd: list[str], cwd: Path, **kw) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False, **kw)
+
+
+def eval_tree() -> str:
+    """評価関数（tests/ と scripts/check.sh）の、HEAD での中身を表すハッシュ。"""
+    r = sh(["git", "ls-tree", "-r", "HEAD", "--", "tests", "scripts/check.sh"], ROOT)
+    return hashlib.sha256(r.stdout.encode()).hexdigest()[:12]
 
 
 def main() -> int:
@@ -65,7 +75,7 @@ def main() -> int:
             if status != "PATCH-FAIL":
                 run = sh(["./scripts/check.sh"], WT)
                 summary = run.stdout.splitlines()[0] if run.stdout else ""
-                status = "KILLED" if run.returncode else "SURVIVED"
+                status = "KILLED" if run.returncode else ("EQUIVALENT" if m.get("equivalent") else "SURVIVED")
                 log = WT / ".agent" / "check.log"
                 if log.exists():
                     (LOGS / f"{n:02d}_{m['id']}.log").write_text(log.read_text(encoding="utf-8"), encoding="utf-8")
@@ -77,10 +87,14 @@ def main() -> int:
         sh(["git", "worktree", "remove", "--force", str(WT)], ROOT)
 
     out = ROOT / ".agent" / "mutate-result.json"
-    out.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
-    killed = sum(r["status"] == "KILLED" for r in results)
+    summary = {"eval_tree": eval_tree(), "killed": sum(r["status"] == "KILLED" for r in results),
+               "survived": sum(r["status"] == "SURVIVED" for r in results),
+               "equivalent": sum(r["status"] == "EQUIVALENT" for r in results), "mutants": results}
+    out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    killed = summary["killed"]
     survived = [r for r in results if r["status"] == "SURVIVED"]
-    print(f"\n{killed}/{len(results)} killed, {len(survived)} survived -> {out.relative_to(ROOT)}")
+    print(f"\n{killed}/{len(results)} killed, {len(survived)} survived, {summary['equivalent']} equivalent "
+          f"-> {out.relative_to(ROOT)}")
     return 1 if survived else 0
 
 

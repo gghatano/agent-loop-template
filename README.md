@@ -39,6 +39,25 @@ docs/ の中身は空のままでいい。AI が実際に失敗した箇所だ�
 | `scripts/loop.sh` | — | ヘッドレスで回す Ralph Loop。check 緑・`.agent/BLOCKED`・無変化・上限回数で止まる |
 | `scripts/mutate.py` | — | 誤実装を1つずつ当てて check を回し、生き残りを数える（`/mutate` が使う） |
 
+## 開発の手順（/dev）
+
+`python3 scripts/phase.py` が、リポジトリの状態だけから現在地を判定する。`/dev`（ヘッドレスなら `./scripts/loop.sh dev`）が、人間の判断が要るところまで進める。
+
+| 段階 | 済んだと言える条件 | 担い手 |
+|---|---|---|
+| 1 リポジトリ | 常に済み | — |
+| 2 パック | `mock/` がない、またはパックが取り込み済み | AI |
+| 3 評価のステップ | `check.sh --list` にステップがある | 人間が結論 → AI が清書 |
+| 4 仕様 | spec があり、出典に追従している | AI |
+| 5 未定義 | open の議論がない | 人間が結論 → AI が清書 |
+| 6 評価関数 | spec の全規則 ID がテストから参照されている | AI |
+| 7 実装 | check が緑 | AI |
+| 8 評価を疑う | 今のテストに対する `/mutate` で、放免されていない生き残りが0 | AI（別の文脈） |
+
+人間の仕事は、AI が `docs/discussions/` に書いた議論の `## 結論` に、判断を一言ずつ書くことだけ。清書（decisions.md・design・設定）は AI がやる。
+
+テンプレートとパックと[利用例](https://github.com/gghatano/agent-loop-example)のモックだけを置いた状態から `./scripts/loop.sh dev` を回すと、人間が書いた結論は4本・合計12行ほどで、段階8まで閉じた（check 緑、`/mutate` は22個中20個を検出、2個は人間が認めた等価変異）。途中で止まった理由と直したものは [PR #5](https://github.com/gghatano/agent-loop-template/pull/5) にある。
+
 ## スキル
 
 - `/goal <#issue>` — Issue の Done を満たすまで実装→検証→修正を回し、PR を出す
@@ -65,6 +84,7 @@ docs/ の中身は空のままでいい。AI が実際に失敗した箇所だ�
 
 - 未信頼のワークスペースでは、`claude -p` は `.claude/settings.json` の allow を無視する。一方で Stop hook は動く。`loop.sh` は許可を `--allowedTools` で明示している
 - 許可はコマンドの前方一致で判定される。AI は `git -C . add` のような書き方もするので、コマンド単位で列挙すると正しい作業まで止まる。道具単位で許可し、破壊的な操作だけを `--disallowedTools` で塞ぐ
+- 前方一致は、コマンドの語の単位で効く。`Bash(python3 scripts/:*)` は `python3 scripts/phase.py` にも一致しない。`Bash(python3:*)` のように、先頭のコマンド名で書く
 - Issue の本文は `loop.sh` が人間側の `gh` で取得し、`tasks/issue-N.md` で渡す。AI に GitHub の認証を持たせない
 
 ## 評価関数を疑う
