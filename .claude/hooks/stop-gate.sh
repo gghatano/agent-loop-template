@@ -17,6 +17,11 @@ if out=$(./scripts/check.sh 2>&1); then
   rm -f "$state"; exit 0
 fi
 
+# 評価のステップが未設定なら、AI が直せる赤ではない。差し戻さない（STEPS を書くのは人間の仕事）
+if grep -q "no steps configured" <<<"$out"; then
+  rm -f "$state"; exit 0
+fi
+
 n=$(( $(cat "$state" 2>/dev/null || echo 0) + 1 ))
 echo "$n" > "$state"
 if [ "$n" -gt $((MAX + 1)) ]; then

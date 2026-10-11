@@ -1,0 +1,9 @@
+{
+  "server": "uv run uvicorn app.main:app --port {port} --log-level warning",
+  "viewport": {"width": 1280, "height": 800},
+  "screens": [
+    {"name": "list", "mock": "mock/list.html", "path": "/projects"},
+    {"name": "detail", "mock": "mock/detail.html", "path": "/projects/101"},
+    {"name": "new", "mock": "mock/new.html", "path": "/projects/new"}
+  ]
+}
