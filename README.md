@@ -17,9 +17,9 @@ Goal (Issue) ─▶ Action ─▶ Observation ─▶ Evaluation (scripts/check.s
 2. `scripts/check.sh` の `TODO` を埋め、`./scripts/check.sh` が通る状態にする。これが唯一の評価関数になる。
 3. 最初のタスクを Issue（テンプレート「Agent task」）で書く。Done は機械判定できる形で。
 4. 細かい手順を書かずに、まず一度丸投げする: `/goal #<issue番号>`
-5. 失敗したら `/postmortem` で原因を4分類して `docs/failures.md` に記録する。
+5. 失敗したら `/postmortem` で原因を4分類して `docs/knowledge/failures.md` に記録する。
 
-docs/ は空のままでいい。AI が実際に失敗した箇所だけが、知識として昇格していく。
+docs/ の中身は空のままでいい。AI が実際に失敗した箇所だけが、知識として昇格していく。docs の構成は [`docs/README.md`](docs/README.md)。
 
 ## 何がどこにあるか
 
@@ -29,8 +29,12 @@ docs/ は空のままでいい。AI が実際に失敗した箇所だけが、�
 | `scripts/check.sh` | 人間 | 評価関数。AI・Stop hook・CI がすべてこれを呼ぶ |
 | `.github/ISSUE_TEMPLATE/` | 人間 | AI の仕事単位（Goal / Done / Constraints） |
 | `tasks/current.md` | AI | 今のループの作業メモ。Issue が正、こちらは使い捨て |
-| `docs/failures.md` | AI→人間 | 失敗の4分類ログ。昇格判断の材料 |
-| `docs/decisions.md` | 両方 | 後から理由が分からなくなる判断だけを残す |
+| `docs/design/` | 人間 | 人間向けの設計書。正 |
+| `docs/spec/` | AI | design と mock から導いた、AI 向けの仕様。出典とハッシュを持ち、出典が変わると check が赤くなる |
+| `docs/discussions/` | 両方 | 実装のアイディア・議論。status を持つ |
+| `docs/decisions.md` | 人間 | 議論から採用した判断。design への橋 |
+| `docs/knowledge/` | AI→人間 | 開発の知識。失敗の4分類ログ（`failures.md`）もここ |
+| `scripts/docs_check.py` | — | docs の整合（spec の追従、議論の状態、リンク）を検査する |
 | `.claude/hooks/stop-gate.sh` | — | 変更があるのに check が赤いまま止まろうとしたら差し戻す |
 | `scripts/loop.sh` | — | ヘッドレスで回す Ralph Loop。check 緑・`.agent/BLOCKED`・無変化・上限回数で止まる |
 | `scripts/mutate.py` | — | 誤実装を1つずつ当てて check を回し、生き残りを数える（`/mutate` が使う） |
@@ -42,12 +46,13 @@ docs/ は空のままでいい。AI が実際に失敗した箇所だけが、�
 - `/postmortem` — 直前の失敗を Context / Permission / Evaluation / Model に分類して記録
 - `/unlearn` — AGENTS.md・スキル・docs を棚卸しし、もう効いていないルールの削除を提案
 - `/mutate` — 実装だけを書き換えた誤実装を作って check にぶつけ、評価関数の穴を探す。テストを書いた本人とは別の文脈で回す
+- `/sync-spec` — 出典（design・mock）が変わった spec を追従させ、ハッシュを記録し直す
 
 ## 失敗の4分類と打ち手
 
 | 分類 | 症状 | 打ち手 |
 |---|---|---|
-| Context | 固有の制約を知らなかった | `AGENTS.md` か `docs/` に**1行**昇格 |
+| Context | 固有の制約を知らなかった | `AGENTS.md`・`docs/design/`・`docs/knowledge/` のどれかに**1行**昇格 |
 | Permission | 必要なコマンド・権限・秘密情報がなかった | `.claude/settings.json` / CI / 環境を直す |
 | Evaluation | 間違っていたのに check が緑だった | `scripts/check.sh` にテスト・検査を足し、`/mutate` で落ちることを確かめる |
 | Model | 上3つを満たしても解けない | タスクを割る。人間が持つ。半年後に再挑戦 |

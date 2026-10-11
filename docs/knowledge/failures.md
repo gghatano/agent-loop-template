@@ -5,7 +5,7 @@ AI が失敗したら、原因を**1つだけ**選んで1行追記する（`/pos
 
 | 分類 | 意味 | 打ち手 |
 |---|---|---|
-| Context | 固有の制約を知らなかった | AGENTS.md / docs/ に1行 |
+| Context | 固有の制約を知らなかった | AGENTS.md / docs/design/ / docs/knowledge/ に1行 |
 | Permission | 権限・コマンド・環境がなかった | settings / CI / 環境 |
 | Evaluation | 間違いを check が通した | scripts/check.sh に検査を追加 |
 | Model | 上記を満たしても解けない | タスク分割・人間が持つ・再挑戦日を書く |

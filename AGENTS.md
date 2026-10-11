@@ -2,7 +2,8 @@
 
 このファイルには**このプロジェクト固有の事情だけ**を書く。
 言語・フレームワーク・ツールの一般的な使い方は書かない（モデルは知っている）。
-1行足すときは、`docs/failures.md` の該当行を根拠として残す。
+1行足すときは、`docs/knowledge/failures.md` の該当行を根拠として残す。
+設計や仕様はここに書かない。`docs/` に置く（地図は `docs/README.md`）。
 
 ## Project rules
 <!-- TODO: 例を消して自分の制約に置き換える -->
@@ -23,9 +24,12 @@
 - 同じ check の失敗を3回連続で直せない
 - 秘密情報・本番環境・課金が絡む操作が必要
 - Issue の `Done` が曖昧で、2通り以上の解釈がある
+- 実装に要る規則が `docs/spec/` になく、`docs/discussions/` で open のまま
 
 ## Where things are
-- 評価: `scripts/check.sh`（AI・hook・CI 共通）
-- 作業メモ: `tasks/current.md`（使い捨て。正は Issue）
-- 失敗ログ: `docs/failures.md`
+- 評価: `scripts/check.sh`（AI・hook・CI 共通。docs の整合も毎回検査する）
+- 仕様（AI 向け）: `docs/spec/`。実装はまずここを読む。理由が知りたいときは出典の `docs/design/` を読む
+- 未決の議論: `docs/discussions/`。status が open のものを前提に実装しない
 - 判断の記録: `docs/decisions.md`
+- 開発の知識と失敗ログ: `docs/knowledge/`
+- 作業メモ: `tasks/current.md`（使い捨て。正は Issue）

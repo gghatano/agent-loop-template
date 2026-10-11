@@ -21,4 +21,4 @@ argument-hint: <#issue番号>
 6. `tasks/current.md` を空に戻す。
 
 ## 途中で失敗・中断したら
-最後に `/postmortem` を実行して原因を1つに分類し、`docs/failures.md` に残す。
+最後に `/postmortem` を実行して原因を1つに分類し、`docs/knowledge/failures.md` に残す。

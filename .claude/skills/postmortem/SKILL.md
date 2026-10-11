@@ -1,6 +1,6 @@
 ---
 name: postmortem
-description: 直前の AI の失敗を Context / Permission / Evaluation / Model の1つに分類し、docs/failures.md に記録して昇格を提案する
+description: 直前の AI の失敗を Context / Permission / Evaluation / Model の1つに分類し、docs/knowledge/failures.md に記録して昇格を提案する
 argument-hint: [Issue番号 または ログのパス]
 ---
 
@@ -14,9 +14,9 @@ argument-hint: [Issue番号 または ログのパス]
 4. **Model** — 上の3つがそろっていても解けなかったか
 
 ## 出力
-1. `docs/failures.md` の Log に1行追記する。
+1. `docs/knowledge/failures.md` の Log に1行追記する。
 2. 分類ごとの打ち手を**差分の形で**提案する。適用は人間の確認を取ってから。
-   - Context → `AGENTS.md` か `docs/` に追記する**1行**。2行以上になるなら、書く場所か粒度を疑う
+   - Context → 何が足りなかったかで置き場所を決める。プロジェクト全体の制約なら `AGENTS.md`、作るものの規則なら `docs/design/`（と `/sync-spec`）、作り方の罠なら `docs/knowledge/`。いずれも**1行**から。2行以上になるなら、書く場所か粒度を疑う
    - Permission → `.claude/settings.json` / CI / 環境の変更
    - Evaluation → `scripts/check.sh` に足す検査、または追加すべきテスト。足したら `/mutate` で、同じ種類の誤実装が落ちることを確かめる
    - Model → タスクの分割案、または「人間が持つ」判断と再挑戦の目安日
