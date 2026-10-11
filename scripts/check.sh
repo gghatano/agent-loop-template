@@ -30,6 +30,10 @@ if [ ${#STEPS[@]} -eq 0 ]; then
   exit 1
 fi
 
+# プロジェクトによらず毎回走る検査
+ALWAYS=("docs|python3 scripts/docs_check.py")
+STEPS=("${ALWAYS[@]}" "${STEPS[@]}")
+
 mkdir -p .agent
 log=.agent/check.log
 : > "$log"

@@ -8,8 +8,8 @@ MAX=3
 state=.agent/stop-attempts
 mkdir -p .agent
 
-# 変更がなければ（質問への回答だけなど）評価しない
-if [ -z "$(git status --porcelain -- . ':!.agent' ':!tasks' ':!docs' 2>/dev/null)" ]; then
+# 変更がなければ（質問への回答だけなど）評価しない。docs の変更は数える（spec の追従漏れも check が見る）
+if [ -z "$(git status --porcelain -- . ':!.agent' ':!tasks' 2>/dev/null)" ]; then
   rm -f "$state"; exit 0
 fi
 

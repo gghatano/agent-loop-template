@@ -13,4 +13,4 @@ Closes #
 <!-- 評価できなかった点。ここが空でないなら、評価指標を足す候補 -->
 
 ## 失敗と分類（あれば）
-<!-- 途中で詰まった点を Context / Permission / Evaluation / Model で。docs/failures.md に記録済みか -->
+<!-- 途中で詰まった点を Context / Permission / Evaluation / Model で。docs/knowledge/failures.md に記録済みか -->

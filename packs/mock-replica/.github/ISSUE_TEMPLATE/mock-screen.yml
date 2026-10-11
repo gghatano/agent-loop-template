@@ -37,4 +37,4 @@ body:
     id: spec
     attributes:
       label: Spec
-      description: docs/mock-spec.md のこの画面の節へのリンク、またはこの画面だけの表示ルール・未定義の決定
+      description: docs/spec/mock.md のこの画面の節と、関係する規則 ID（R-xx）

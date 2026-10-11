@@ -18,7 +18,7 @@ rm -rf packs                           # パックの元ファイルはもう要
 
 ## 流れ
 1. `mock/` にモックを置く
-2. `/mock-spec` で仕様の下書き（`docs/mock-spec.md`）・fixtures・`vrt.json`・画面ごとの Issue 案を作る。**未定義の項目を人間が決める**
+2. `/mock-spec` で AI 向けの仕様（`docs/spec/mock.md`）・未決の議論（`docs/discussions/`）・fixtures・`vrt.json`・画面ごとの Issue 案を作る。**未定義の議論を人間が決め**、`docs/decisions.md` と `docs/design/` に反映する
 3. `/mock-tests` で評価関数を組む。実装がない状態で check が赤いことを確かめる
 4. 画面ごとの Issue を `/goal` か `scripts/loop.sh` に渡す
 5. `/mutate` で評価関数の強さを確かめる
@@ -26,9 +26,9 @@ rm -rf packs                           # パックの元ファイルはもう要
 ## 中身
 | ファイル | 役割 |
 |---|---|
-| `docs/mock-replica.md` | モック再現の知識。VRT が見ているもの・見ていないもの、実際に踏んだ差 |
+| `docs/knowledge/mock-replica.md` | モック再現の知識。VRT が見ているもの・見ていないもの、実際に踏んだ差 |
 | `scripts/vrt.py` | モックと実装を同じ Chromium で撮ってピクセル差分を数える。`vrt.json` で設定 |
-| `.claude/skills/mock-spec` | モックから仕様・fixtures・vrt.json・Issue 案を作る |
+| `.claude/skills/mock-spec` | モックから AI 向けの仕様・未決の議論・fixtures・vrt.json・Issue 案を作る |
 | `.claude/skills/mock-tests` | 仕様から、単体・結合（全項目の完全一致）・E2E のテストを作る |
 | `.github/ISSUE_TEMPLATE/mock-screen.yml` | 画面ごとの Issue。Done を最初から機械判定の形にしてある |
 
