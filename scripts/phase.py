@@ -138,7 +138,9 @@ def phases() -> list[dict]:
         if data.get("eval_tree") != current:
             why = "評価関数（tests/・check.sh）が変わったあとの /mutate の結果がない（変更はコミットしてから回す）"
         elif data.get("survived", 1):
-            why = f"生き残り {data['survived']} 個。落とすテストを足して回し直す"
+            why = (f"生き残り {data['survived']} 個。落とすテストを足して回し直す。"
+                   "どんなテストでも区別できない（等価変異）と考えるなら、議論に書いて止まる"
+                   "（人間が認めたら tests/mutants.json の該当に equivalent を書く）")
         else:
             ok8 = True
     add(8, "評価を疑う（/mutate）", ok8, "AI（別の文脈）", why)
