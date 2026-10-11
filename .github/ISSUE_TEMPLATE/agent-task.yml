@@ -13,7 +13,7 @@ body:
     id: done
     attributes:
       label: Done
-      description: 機械で判定できる条件だけ。「いい感じ」「きれいに」は書かない
+      description: 機械で判定できる条件だけ。「いい感じ」「きれいに」は書かない。テストを書く Issue では「どんな誤実装を落とせるか」を書く
       placeholder: |
         - [ ] 主要3画面の VRT 差分が 0
         - [ ] ./scripts/check.sh が通る

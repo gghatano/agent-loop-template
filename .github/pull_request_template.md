@@ -6,6 +6,7 @@ Closes #
 ## なぜ正しいか
 <!-- Issue の Done 各項目について、確かめたコマンドと結果 -->
 - [ ] `./scripts/check.sh` → `CHECK: PASS ...`
+- [ ] （テストや check を変えた場合）`/mutate` → `N/N killed`
 - [ ]
 
 ## 確かめていないこと
