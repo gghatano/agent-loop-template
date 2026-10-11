@@ -1,0 +1,40 @@
+name: Mock screen
+description: モックの1画面を実装で再現する。Done は VRT・結合テスト・E2E で機械判定する
+labels: ["agent", "mock"]
+body:
+  - type: input
+    id: mock
+    attributes:
+      label: Mock
+      description: 再現するモックのファイル
+      placeholder: mock/detail.html
+    validations: { required: true }
+  - type: input
+    id: route
+    attributes:
+      label: Route
+      placeholder: /projects/{id}
+    validations: { required: true }
+  - type: textarea
+    id: done
+    attributes:
+      label: Done
+      value: |
+        - [ ] `python scripts/vrt.py --only <name>` で diff=0px、console_errors=0
+        - [ ] 結合テスト：差し替えデータで、この画面の全項目が期待値の表と完全一致
+        - [ ] E2E：この画面への遷移と、この画面からの遷移
+        - [ ] `./scripts/check.sh` が `CHECK: PASS`
+    validations: { required: true }
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      value: |
+        - `mock/` と `fixtures/` は変更しない
+        - 値をテンプレートに直書きしない
+        - モックの CSS をコピーしない（そのまま配信する）
+  - type: textarea
+    id: spec
+    attributes:
+      label: Spec
+      description: docs/mock-spec.md のこの画面の節へのリンク、またはこの画面だけの表示ルール・未定義の決定
